@@ -108,4 +108,4 @@ if __name__ == '__main__':
         'database_url' : database_url,
         'database_port' : int(database_port)
     }
-#cherrypy.quickstart(Server(configuration),'/',conf)
+cherrypy.quickstart(Server(configuration),'/',conf)
