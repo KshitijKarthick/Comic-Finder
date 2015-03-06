@@ -4,6 +4,12 @@ import mimetypes
 import os
 import configparser
 import json
+import re
+import pymongo
+import urllib
+from bs4 import BeautifulSoup
+from pymongo import MongoClient
+from bson import Regex
 from jinja2 import Environment, FileSystemLoader
 from random import randint
 class Server():
@@ -15,12 +21,14 @@ class Server():
 
     transcript_url = ""
     comic_url = ""
+    database = ""
 
-    def __init__(self, transcript_url, comic_url):
+    def __init__(self, configuration):
         ''' Initialization the URL of the comic and transcript '''
 
-        Server.transcript_url = transcript_url
-        Server.comic_url = comic_url
+        self.transcript_url = configuration['transcript_url']
+        self.comic_url = configuration['comic_url']
+        self.database = Database(configuration['database_url'], configuration['database_port'])
 
     @cherrypy.expose
     def index(self):
@@ -34,7 +42,44 @@ class Server():
         ''' Return the url of the comic requested based on the i/p String '''
 
         # Temporary Random Url Generated for Debuggin Purpose
-        return json.dumps({string:[comic_url + str(randint(1,100))]})
+        # return json.dumps({string:[comic_url + str(randint(1,100))]})
+        matched_entries=[]
+        iterable_list=self.database.find_data(string)
+        for entry in iterable_list:
+            matched_entries.append(int(entry['id']))
+        return json.dumps({string:matched_entries})
+
+class Database():
+    '''
+        Database Configuration:
+        client -> MongoDb client.
+        db -> Retrieve the Database.
+        collection -> Retrieve the Collection.
+    '''
+
+    client = ""
+    db = ""
+    collection = ""
+
+    def __init__(self, database_url, database_port ):
+        ''' Initialization the URL of the comic and transcript '''
+
+        self.client = MongoClient(database_url, database_port)
+        self.db = self.client.comics
+        self.collection = self.db.comics
+
+    def insert_data(self, data):
+        ''' Insert the data into the Collection '''
+
+        self.collection.insert(data)
+
+    def find_data(self, string):
+        ''' Find the string in the Database '''
+
+        pattern = re.compile(string, re.IGNORECASE)
+        regex = Regex.from_native(pattern)
+        regex.flags ^= re.UNICODE
+        return self.collection.find({"transcript":regex})
 
 if __name__ == '__main__':
     ''' Setting up the Server with Specified Configuration'''
@@ -55,4 +100,12 @@ if __name__ == '__main__':
     server_config.read('server.conf')
     transcript_url=server_config.get('URL','transcript_url')
     comic_url=server_config.get('URL','comic_url')
-cherrypy.quickstart(Server(transcript_url, comic_url),'/',conf)
+    database_url=server_config.get('Database', 'database_url')
+    database_port=server_config.get('Database', 'database_port')
+    configuration = {
+        'transcript_url' : transcript_url,
+        'comic_url' : comic_url,
+        'database_url' : database_url,
+        'database_port' : int(database_port)
+    }
+#cherrypy.quickstart(Server(configuration),'/',conf)
