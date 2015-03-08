@@ -81,6 +81,31 @@ class Database():
         regex.flags ^= re.UNICODE
         return self.collection.find({"transcript":regex})
 
+    def get_data(self):
+        ''' Obtain the data for storing into the Collection '''
+        errors=[]
+        link_id=1
+        while(1):
+            print(link_id)
+            opener=urllib.request.build_opener()
+            opener.addheaders=[('User-agent','Mozilla/5.0')]
+            webpage=opener.open("http://www.explainxkcd.com/wiki/index.php/"+str(link_id))
+            if webpage.status == 200:
+                html = webpage.readall()
+                soup = BeautifulSoup(html)
+                transcript = soup.find('dl')
+                if transcript != None:
+                    self.insert_data({'id':link_id,'transcript':transcript.get_text()})
+                else:
+                    errors.append(link_id)
+            elif link_id == 404:
+                continue;
+            else:
+                break
+            link_id+=1
+        print(errors)
+        print(" -> Could not be Downloaded does not follow the standard format")
+
 if __name__ == '__main__':
     ''' Setting up the Server with Specified Configuration'''
 
