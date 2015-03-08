@@ -12,6 +12,17 @@ Find XKCD Comics by searching for the String present in any of the comics, and t
 ## Working :
   * Client sends a GET request with the string, server responds back with the comic URL.
 
+## Execution :
+'''
+# Install MongoDB
+# Set up the Server and the Database with the xkcd info
+    > cd Comic-Finder
+    > sudo pip install -r requirements.txt
+    > mongorestore xkcd
+    > python server.py
+# Open the Browser at localhost:5000
+'''
+
 ## To Do :
   * Database Implementation.
   * Crawling through the Transcripts of the Comics.
