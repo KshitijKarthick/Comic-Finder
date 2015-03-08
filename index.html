@@ -1,0 +1,65 @@
+<html>
+	<head>
+		<script src="http://code.jquery.com/jquery-1.11.2.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/resources/static/css/style.css" />
+		<link href='http://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
+	</head>
+
+	<body>
+		<div id="loading_pic"></div>
+		<div id="main_container">
+			<div id="header" class="navbar">COMIC CRAWLER</div>
+			<div id="main">
+				<div id="image_container">
+					<img id="dialogue_svg" src="/resources/static/images/image1.svg">
+				</div>
+				<div id="input_container">
+					<input id="dialogue_input" type="text" class="input input-lg"></input>
+				</div>
+				<iframe id="iframe_test"></iframe>
+			</div>
+			<!--<span id="display_text">PICTURE HERE:</span>
+			<div id="comic_display" class="container"></div>-->
+			<div id="main_button">
+				<div id="btn_container">
+					<button id="input_btn" class="btn btn-lg">FIND COMIC</button>
+				</div>
+				<div id="button_img">
+					<img id="button_svg" src="/resources/static/images/image3.svg">
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(window).load(function() {
+				$('#loading_pic').delay(2000).slideUp(1000);
+			});
+			$(document).ready(function() {
+				$('#dialogue_input').focus();
+			});
+			$('#input_btn').click(function(){
+				var input_string=$('#dialogue_input').val();
+				console.log(input_string);
+			
+				$.ajax({
+					url:"/find-comic/"+input_string,
+					type: 'GET',
+					dataType: 'json',
+					success: function(result){
+						console.log(result);
+						var string=result[input_string];
+						var url=result[input_string][0];
+						console.log(url);
+						$("#iframe_test").show();
+						$("#iframe_test").attr("src",url);
+        			}
+				});
+			});
+		</script>
+
+	</body>
+
+</html>
