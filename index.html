@@ -51,7 +51,8 @@
 					success: function(result){
 						console.log(result);
 						var string=result[input_string];
-						var url=result[input_string][0];
+						var url="http://www.xkcd.com/";
+						url+=result[input_string][0];
 						console.log(url);
 						$("#iframe_test").show();
 						$("#iframe_test").attr("src",url);
