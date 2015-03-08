@@ -24,7 +24,5 @@ Find XKCD Comics by searching for the String present in any of the comics, and t
 ```
 
 ## To Do :
-  * Database Implementation.
-  * Crawling through the Transcripts of the Comics.
-  * AJAX Implementation.
   * UI/UX Design on Clientside.
+  * Automate Crawling on the Server Side.
