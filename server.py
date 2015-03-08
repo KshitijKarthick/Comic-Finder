@@ -47,15 +47,7 @@ class Server():
         iterable_list=self.database.find_data(string)
         for entry in iterable_list:
             id = int(entry['id'])
-            opener=urllib.request.build_opener()
-            opener.addheaders=[('User-agent','Mozilla/5.0')]
-            try:
-                webpage=opener.open(comic_url+str(id))
-                html = webpage.readall()
-                img = BeautifulSoup(html).find(id="comic").img['src']
-                matched_entries.append({'id':id, 'comic':img})
-            except:
-                matched_entries.append({'id':id, 'comic':""})
+            matched_entries.append(id)
         return json.dumps({string:matched_entries})
 
 class Database():
