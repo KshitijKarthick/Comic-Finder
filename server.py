@@ -1,4 +1,4 @@
-#!/usr/bin/python3.4
+#! /usr/bin/env python3
 import cherrypy
 import mimetypes
 import os
@@ -46,7 +46,16 @@ class Server():
         matched_entries=[]
         iterable_list=self.database.find_data(string)
         for entry in iterable_list:
-            matched_entries.append(int(entry['id']))
+            id = int(entry['id'])
+            opener=urllib.request.build_opener()
+            opener.addheaders=[('User-agent','Mozilla/5.0')]
+            try:
+                webpage=opener.open(comic_url+str(id))
+                html = webpage.readall()
+                img = BeautifulSoup(html).find(id="comic").img['src']
+                matched_entries.append({'id':id, 'comic':img})
+            except:
+                matched_entries.append({'id':id, 'comic':""})
         return json.dumps({string:matched_entries})
 
 class Database():
