@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
 import cherrypy
-import mimetypes
 import os
 import configparser
 import json
@@ -19,16 +18,14 @@ class Server():
         transcript_url -> Transcipt URL specified in server.conf
     '''
 
-    transcript_url = ""
     comic_url = ""
-    database = ""
+    database  = None
 
     def __init__(self, configuration):
         ''' Initialization the URL of the comic and transcript '''
 
-        self.transcript_url = configuration['transcript_url']
         self.comic_url = configuration['comic_url']
-        self.database = Database(configuration['database_url'], configuration['database_port'])
+        self.database = Database(configuration['database_uri'])
 
     @cherrypy.expose
     def index(self):
@@ -41,8 +38,6 @@ class Server():
     def find_comic(self, string):
         ''' Return the url of the comic requested based on the i/p String '''
 
-        # Temporary Random Url Generated for Debuggin Purpose
-        # return json.dumps({string:[comic_url + str(randint(1,100))]})
         matched_entries=[]
         iterable_list=self.database.find_data(string)
         for entry in iterable_list:
@@ -62,12 +57,12 @@ class Database():
     db = ""
     collection = ""
 
-    def __init__(self, database_url, database_port ):
+    def __init__(self, database_uri ):
         ''' Initialization the URL of the comic and transcript '''
 
-        self.client = MongoClient(database_url, database_port)
-        self.db = self.client.comics
-        self.collection = self.db.comics
+        self.client = MongoClient(database_uri)
+        self.db = self.client.get_default_database()
+        self.collection = self.db.xkcd
 
     def insert_data(self, data):
         ''' Insert the data into the Collection '''
@@ -83,39 +78,39 @@ class Database():
 
     def get_data(self):
         ''' Obtain the data for storing into the Collection '''
+
         errors=[]
         link_id=0
-        while(1):
+        while(True):
             link_id+=1
             print(link_id)
             opener=urllib.request.build_opener()
-            opener.addheaders=[('User-agent','Mozilla/5.0')]
             try:
-                webpage=opener.open("http://www.explainxkcd.com/wiki/index.php/"+str(link_id))
+                webpage=opener.open("http://www.xkcd.com/"+str(link_id)+"/info.0.json")
             except:
                 if link_id == 404:
                     continue;
                 else:
                     break;
             if webpage.status == 200:
-                html = webpage.readall()
-                soup = BeautifulSoup(html)
-                transcript = soup.find('dl')
-                if transcript != None:
-                    self.insert_data({'id':link_id,'transcript':transcript.get_text()})
-                else:
-                    errors.append(link_id)
-                    print(errors)
-        print(errors)
-        print(" -> Could not be Downloaded does not follow the standard format")
+                try:
+                    comic_data = json.loads((webpage.readall()).decode("utf-8"))
+                    self.insert_data({
+                        'id':link_id,
+                        'transcript': comic_data['transcript'],
+                        'title': comic_data['title'],
+                        'img': comic_data['img']
+                    })
+                except:
+                    errors.append(link)
+        print(errors," -> Could not be Downloaded does not follow the standard format")
+        return errors
 
 if __name__ == '__main__':
     ''' Setting up the Server with Specified Configuration'''
 
     server_config = configparser.RawConfigParser()
     env = Environment(loader=FileSystemLoader(''))
-    cherrypy.config.update({'server.socket_host': '0.0.0.0',})
-    cherrypy.config.update({'server.socket_port': int(os.environ.get('PORT', '5000')),})
     conf = {
         '/':{
             'tools.staticdir.root': os.path.abspath(os.getcwd())
@@ -126,14 +121,14 @@ if __name__ == '__main__':
         }
     }
     server_config.read('server.conf')
-    transcript_url=server_config.get('URL','transcript_url')
-    comic_url=server_config.get('URL','comic_url')
-    database_url=server_config.get('Database', 'database_url')
-    database_port=server_config.get('Database', 'database_port')
+    server_port=server_config.get('Server','port')
+    server_host=server_config.get('Server','host')
+    comic_url=server_config.get('xkcd','url')
+    database_uri=server_config.get('Database', 'database_uri')
     configuration = {
-        'transcript_url' : transcript_url,
-        'comic_url' : comic_url,
-        'database_url' : database_url,
-        'database_port' : int(database_port)
+        'comic_url'     :   comic_url,
+        'database_uri'  :   database_uri
     }
-cherrypy.quickstart(Server(configuration),'/',conf)
+    cherrypy.config.update({'server.socket_host': server_host})
+    cherrypy.config.update({'server.socket_port': int(os.environ.get('PORT', server_port))})
+    cherrypy.quickstart(Server(configuration),'/',conf)

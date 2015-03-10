@@ -25,8 +25,7 @@
 				<button id="next_btn">NEXT</button>
 			</div>
 			<div id="fixed">
-				<div id="output_detail">COMIC DETAILS:
-				</div>
+				<div id="output_detail">COMIC DETAILS:</div>
 				<div id="main_find">
 					<div id="find_container">
 						<button id="find_button" class="btn btn-lg">FIND COMIC</button>
@@ -56,6 +55,7 @@
 				$('#output_detail').text("");
 				$('#output_detail').append("COMIC DETAILS:");
 				$('<br>').appendTo($('#output_detail'));
+				$('<br>').appendTo($('#output_detail'));
 				$('#output_detail').append("Comics Found:"+data_len);
 				$('<br>').appendTo($('#output_detail'));
 				$('#output_detail').append("Comic ID:"+data_id);
@@ -64,6 +64,8 @@
 				var url="https://www.xkcd.com/";
 				if(data.length>0){
 					id = (id+1)%data.length;
+					data_id=data[id];
+					console.log(data[id])
 					var url="https://www.xkcd.com/";
 					url+=data[id];
 					$('#output_display').attr('src',url);
@@ -74,12 +76,13 @@
 				var url="https://www.xkcd.com/";
 				if(data.length>0){
 					id = (id-1)%data.length;
+					data_id=data[id];
+					console.log(data[id])
 					var url="https://www.xkcd.com/";
 					url+=data[id];
 					$('#output_display').attr('src',url);
 					display();
 				}
-				
 			})
 			$('#find_button').click(function(){
 				var input_string=$('#dialogue_input').val();
@@ -93,7 +96,9 @@
 					type: 'GET',
 					dataType: 'json',
 					success: function(result){
+						console.log(result);
 						data = result[input_string];
+						data_id=data[id];
 						data_len=data.length;
 						display();
 						if(data.length > 0){

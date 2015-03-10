@@ -9,5 +9,5 @@ if __name__ == '__main__':
     server_config.read('server.conf')
     database_url=server_config.get('Database', 'database_url')
     database_port=server_config.get('Database', 'database_port')
-    database = Database(database_url,database_port)
+    database = Database(database_url,int(database_port))
     database.get_data()
