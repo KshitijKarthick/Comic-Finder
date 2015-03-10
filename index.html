@@ -1,66 +1,114 @@
 <html>
 	<head>
-		<script src="http://code.jquery.com/jquery-1.11.2.js"></script>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<script type="text/javascript" src="/resources/static/js/jquery.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="/resources/static/css/style.css" />
-		<link href='http://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
 	</head>
 
 	<body>
-		<div id="loading_pic"></div>
+		<!--<div id="loading_pic"></div>-->
 		<div id="main_container">
 			<div id="header" class="navbar">COMIC CRAWLER</div>
-			<div id="main">
-				<div id="image_container">
-					<img id="dialogue_svg" src="/resources/static/images/image1.svg">
-				</div>
+			<div id="main_input">
+				<object id="dialogue_image" data="/resources/static/images/image1.svg" type="image/svg+xml">
+				</object>
 				<div id="input_container">
 					<input id="dialogue_input" type="text" class="input input-lg"></input>
 				</div>
-				<iframe id="iframe_test"></iframe>
+				<iframe id="output_display"></iframe>
 			</div>
-			<!--<span id="display_text">PICTURE HERE:</span>
-			<div id="comic_display" class="container"></div>-->
-			<div id="main_button">
-				<div id="btn_container">
-					<button id="input_btn" class="btn btn-lg">FIND COMIC</button>
+			<div id="navigator">
+				<button id="previous_btn">PREVIOUS</button>
+				<button id="next_btn">NEXT</button>
+			</div>
+			<div id="fixed">
+				<div id="output_detail">COMIC DETAILS:
 				</div>
-				<div id="button_img">
-					<img id="button_svg" src="/resources/static/images/image3.svg">
+				<div id="main_find">
+					<div id="find_container">
+						<button id="find_button" class="btn btn-lg">FIND COMIC</button>
+					</div>
+					<object id="find_image" data="/resources/static/images/image3.svg" type="image/svg+xml">
+					</object>
 				</div>
 			</div>
 		</div>
+		
 		<script type="text/javascript">
+			var comic_flag = false;
+			var data = [];
+			var data_id;
+			var data_len;
+			var id = 0;
 			$(window).load(function() {
 				$('#loading_pic').delay(2000).slideUp(1000);
 			});
 			$(document).ready(function() {
 				$('#dialogue_input').focus();
 			});
-			$('#input_btn').click(function(){
+			function display() {
+				data_id=data[id];
+				if(typeof data_id === 'undefined')
+					alert('Please press NEXT button');
+				$('#output_detail').text("");
+				$('#output_detail').append("COMIC DETAILS:");
+				$('<br>').appendTo($('#output_detail'));
+				$('#output_detail').append("Comics Found:"+data_len);
+				$('<br>').appendTo($('#output_detail'));
+				$('#output_detail').append("Comic ID:"+data_id);
+			}
+			$('#next_btn').click(function(){
+				var url="https://www.xkcd.com/";
+				if(data.length>0){
+					id = (id+1)%data.length;
+					var url="https://www.xkcd.com/";
+					url+=data[id];
+					$('#output_display').attr('src',url);
+					display();
+				}
+			})
+			$('#previous_btn').click(function(){
+				var url="https://www.xkcd.com/";
+				if(data.length>0){
+					id = (id-1)%data.length;
+					var url="https://www.xkcd.com/";
+					url+=data[id];
+					$('#output_display').attr('src',url);
+					display();
+				}
+				
+			})
+			$('#find_button').click(function(){
 				var input_string=$('#dialogue_input').val();
-				console.log(input_string);
-			
+				if(input_string.length == 0){
+					alert("Please enter a string!!");
+					$('#dialogue_input').focus();
+				}
+				comic_flag=true;
 				$.ajax({
 					url:"/find-comic/"+input_string,
 					type: 'GET',
 					dataType: 'json',
 					success: function(result){
-						console.log(result);
-						var string=result[input_string];
-						var url="http://www.xkcd.com/";
-						url+=result[input_string][0];
-						console.log(url);
-						$("#iframe_test").show();
-						$("#iframe_test").attr("src",url);
+						data = result[input_string];
+						data_len=data.length;
+						display();
+						if(data.length > 0){
+							var url="https://www.xkcd.com/";
+							url+=data[id];
+							$('#output_display').attr('src',url);
+						}
+
+						else{
+							$('#output_display').attr('src',"http://foxrate.fr/404notfound");
+						}
+						
         			}
 				});
 			});
 		</script>
-
 	</body>
-
 </html>
