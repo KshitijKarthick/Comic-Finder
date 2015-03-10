@@ -60,9 +60,13 @@ class Database():
     def __init__(self, database_uri ):
         ''' Initialization the URL of the comic and transcript '''
 
-        self.client = MongoClient(database_uri)
-        self.db = self.client.get_default_database()
-        self.collection = self.db.xkcd
+        try:
+            self.client = MongoClient(database_uri)
+            self.db = self.client.get_default_database()
+            self.collection = self.db.xkcd
+        except:
+            print("Error Could not Connect with the Database\nMake sure connection can be estabilished with the Database.")
+            exit(-1)
 
     def insert_data(self, data):
         ''' Insert the data into the Collection '''
