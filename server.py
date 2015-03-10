@@ -3,14 +3,10 @@ import cherrypy
 import os
 import configparser
 import json
-import re
-import pymongo
-import urllib
+from database import Database
 from bs4 import BeautifulSoup
-from pymongo import MongoClient
-from bson import Regex
 from jinja2 import Environment, FileSystemLoader
-from random import randint
+
 class Server():
     '''
         Server Configuration:
@@ -44,71 +40,6 @@ class Server():
             id = int(entry['id'])
             matched_entries.append(id)
         return json.dumps({string:matched_entries})
-
-class Database():
-    '''
-        Database Configuration:
-        client -> MongoDb client.
-        db -> Retrieve the Database.
-        collection -> Retrieve the Collection.
-    '''
-
-    client = ""
-    db = ""
-    collection = ""
-
-    def __init__(self, database_uri ):
-        ''' Initialization the URL of the comic and transcript '''
-
-        try:
-            self.client = MongoClient(database_uri)
-            self.db = self.client.get_default_database()
-            self.collection = self.db.xkcd
-        except:
-            print("Error Could not Connect with the Database\nMake sure connection can be estabilished with the Database.")
-            exit(-1)
-
-    def insert_data(self, data):
-        ''' Insert the data into the Collection '''
-
-        self.collection.insert(data)
-    def find_data(self, string):
-        ''' Find the string in the Database '''
-
-        pattern = re.compile(string, re.IGNORECASE)
-        regex = Regex.from_native(pattern)
-        regex.flags ^= re.UNICODE
-        return self.collection.find({"transcript":regex})
-
-    def get_data(self):
-        ''' Obtain the data for storing into the Collection '''
-
-        errors=[]
-        link_id=0
-        while(True):
-            link_id+=1
-            print(link_id)
-            opener=urllib.request.build_opener()
-            try:
-                webpage=opener.open("http://www.xkcd.com/"+str(link_id)+"/info.0.json")
-            except:
-                if link_id == 404:
-                    continue;
-                else:
-                    break;
-            if webpage.status == 200:
-                try:
-                    comic_data = json.loads((webpage.readall()).decode("utf-8"))
-                    self.insert_data({
-                        'id':link_id,
-                        'transcript': comic_data['transcript'],
-                        'title': comic_data['title'],
-                        'img': comic_data['img']
-                    })
-                except:
-                    errors.append(link)
-        print(errors," -> Could not be Downloaded does not follow the standard format")
-        return errors
 
 if __name__ == '__main__':
     ''' Setting up the Server with Specified Configuration'''
