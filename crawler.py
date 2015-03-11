@@ -4,6 +4,7 @@ import urllib
 import json
 from urllib import request
 from database import Database
+import re
 def crawl_data(database):
         ''' Obtain the data for storing into the Collection '''
 
@@ -23,14 +24,15 @@ def crawl_data(database):
             if webpage.status == 200:
                 try:
                     comic_data = json.loads((webpage.readall()).decode("utf-8"))
+                    webpage.close()
                     database.insert_data({
                         'id':link_id,
-                        'transcript': comic_data['transcript'],
+                        'transcript': re.sub("{{.*}}","",comic_data['transcript'],0),
                         'title': comic_data['title'],
                         'img': comic_data['img']
                     })
                 except:
-                    errors.append(link)
+                    errors.append(link_id)
         print(errors," -> Could not be Downloaded does not follow the standard format")
         return errors
 
