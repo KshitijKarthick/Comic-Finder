@@ -32,13 +32,21 @@ class Server():
 
     @cherrypy.expose
     def find_comic(self, string):
-        ''' Return the url of the comic requested based on the i/p String '''
+        ''' Return comic details requested based on the i/p String '
+            Return Type JSON object Json[List[Dictionary]]
+            Keys of Dictionary:
+                id  -> Comic Id
+                img -> Comic image
+        ''
 
         matched_entries=[]
         iterable_list=self.database.find_data(string)
         for entry in iterable_list:
             id = int(entry['id'])
-            matched_entries.append(id)
+            matched_entries.append({
+                "id" : int(entry['id']),
+                "img" : entry["img"]
+                })
         return json.dumps({string:matched_entries})
 
 if __name__ == '__main__':
