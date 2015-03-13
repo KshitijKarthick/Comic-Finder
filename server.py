@@ -37,7 +37,7 @@ class Server():
             Keys of Dictionary:
                 id  -> Comic Id
                 img -> Comic image
-        ''
+        '''
 
         matched_entries=[]
         iterable_list=self.database.find_data(string)
