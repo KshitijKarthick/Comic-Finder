@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 import re
 from bson import Regex
+import pymongo
 from pymongo import MongoClient
 class Database():
     '''
@@ -36,3 +37,9 @@ class Database():
         regex = Regex.from_native(pattern)
         regex.flags ^= re.UNICODE
         return self.collection.find({"transcript":regex})
+
+    def increment_rank(self, id):
+
+        data = self.collection.find_one({'id':id})
+        data['rank'] += 1
+        self.collection.update({'id':id},{"$set":data},upsert=False)        

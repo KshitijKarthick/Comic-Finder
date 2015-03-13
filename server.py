@@ -3,6 +3,7 @@ import cherrypy
 import os
 import configparser
 import json
+import pymongo
 from database import Database
 from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
@@ -40,9 +41,10 @@ class Server():
         '''
 
         matched_entries=[]
-        iterable_list=self.database.find_data(string)
+        iterable_list=(self.database.find_data(string)).sort('rank', pymongo.DESCENDING)
         for entry in iterable_list:
             id = int(entry['id'])
+            self.database.increment_rank(id)
             matched_entries.append({
                 "id" : int(entry['id']),
                 "img" : entry["img"]
