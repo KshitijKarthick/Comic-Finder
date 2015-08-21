@@ -42,4 +42,4 @@ class Database():
 
         data = self.collection.find_one({'id':id})
         data['rank'] += 1
-        self.collection.update({'id':id},{"$set":data},upsert=False)        
+        self.collection.save(data)
