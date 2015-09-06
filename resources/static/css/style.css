@@ -6,17 +6,12 @@ html, head, body {
 #loading_pic {
 	width: 100%;
 	height: 100%;
-	z-index:;
 	background-color: black;
 }
 
 #main_container {
-	position: absolute;
-	left: 0;
-	top: 0;
-	height: 100%;
-	width: 100%;
-	z-index:
+	padding-left: 1%;
+	padding-right: 1%;
 }
 
 #header {
@@ -24,20 +19,14 @@ html, head, body {
 	font-size: 40px;
 	text-align: center;
 	border-bottom: solid black 4px;
-	z-index:;
 }
 
 #main_input {
-	display: flex;
-	z-index:;
-	width: 100%;
-	height: 52%;
+	height: 80%;
+	
 }
 
 #input_container {
-	margin-top: 7%;
-	position: absolute;
-	left:9%;
 }
 
 .input-lg {
@@ -51,8 +40,16 @@ html, head, body {
 }
  
 #dialogue_image {
-	width: 80%;
-	height: 80%;
+	width: 200px;
+	height: 200px;
+}
+
+#dialogue_input {
+	/*position: absolute;
+	top: 15%;
+	right: 24%;*/
+	margin-top: 20%;
+
 }
 
 .btn-lg {
@@ -61,27 +58,35 @@ html, head, body {
 	border-radius: 20px;
 	font-family: 'Gloria Hallelujah', cursive;
 	font-size: 25px;
-	z-index:;
 }
 
 .btn-lg:hover {
 	background-color: rgba(255,255,0,0.7);
 }
 
+.btn {
+	background-color: white;
+	border: solid black 3px;
+	border-radius: 20px;
+	font-family: 'Gloria Hallelujah', cursive;
+	font-size: 22px;
+}
+
+.btn:hover {
+	background-color: rgba(255,255,0,0.7);
+}
+
 #output_display {
-	position: absolute;
-	right: 4%;
-	width: 65%;
-	height:50%;
-	border: solid black 2px;
+	border: solid black 3px;
 	border-radius: 20px;
 
 
 }
 
 #navigator {
-	display: flex;
-	margin-left: 45%;
+	height: 80%;
+	border: solid black 3px;
+	border-radius: 20px;
 
 }
 
@@ -97,6 +102,10 @@ html, head, body {
 	
 }
 
+#previous_btn:hover {
+	background-color: rgba(255,0,0,0.75);
+}
+
 #next_btn {
 	min-width: 200px;
 	min-height: 35px;
@@ -107,48 +116,32 @@ html, head, body {
 	font-size: 20px;
 }
 
-#dialogue_input {
-	min-height: 100px;
-	z-index:;
-
+#next_btn:hover {
+	background-color: rgba(255,0,0,0.75);
 }
 
+
+
 #output_detail {
-	width: 200px;
-	min-height: 200px;
-	border: solid black 2px;
+	min-height: 110px;
+	border: solid black 3px;
 	border-radius: 20px;
 	font-family: 'Gloria Hallelujah', cursive;
 	font-size: 20px;
 	text-align: center;
-	padding: 10px;
 }
 
 #main_find {
-	display: flex;
 	text-align: center;
 }
 
 #find_image {
-	float: left;
-	height: 40%;
-	width: 20%;
-	position: fixed;
-	position: absolute;
-	right: 25%;
-	top: 60%;
+	height: 55%;
+	width: 55%;
 	z-index: -1;
 }
 
 #find_container {
-	margin-top: 100px;
-	max-width: 1200px;
-	float: left;
-	margin-left: 540px;
-	z-index:;
+	margin-top: 32%;
+	margin-left: 3.2%;
 }
-
-#fixed {
-	display: flex;
-}
-
