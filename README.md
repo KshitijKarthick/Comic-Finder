@@ -1,4 +1,5 @@
-[Comic Finder Webapp:](https://quiet-anchorage-8108.herokuapp.com/)
+# Comic Finder
+[Comic Finder Web Application :](https://quiet-anchorage-8108.herokuapp.com/)
 Find XKCD Comics by searching for the String present in any of the comics, and the application lists the comics with the string.
 
 ## Functionality :
