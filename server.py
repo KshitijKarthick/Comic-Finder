@@ -28,6 +28,7 @@ class Server():
     def index(self):
         """ Render the index page """
 
+        cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
         template = env.get_template('index.html')
         return template.render()
 
@@ -35,6 +36,7 @@ class Server():
     def no_of_comics(self):
         """ Return the count of no of comics """
 
+        cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
         return json.dumps({
             "count": self.database.get_count()
         })
@@ -43,6 +45,7 @@ class Server():
     def get_comic_details(self, comic_id):
         """ Get Comic details for specified comic id """
 
+        cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
         comic_details = self.database.get_comic(comic_id)
         del comic_details["_id"]
         return json.dumps(comic_details)
@@ -56,6 +59,7 @@ class Server():
                 img -> Comic image
         '''
 
+        cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
         matched_entries = []
         iterable_list = (
             self.database.search_data(string)
