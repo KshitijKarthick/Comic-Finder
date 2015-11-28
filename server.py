@@ -7,6 +7,7 @@ import pymongo
 from database import Database
 from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
+import code
 
 class Server():
     '''
@@ -32,6 +33,20 @@ class Server():
         return template.render()
 
     @cherrypy.expose
+    def no_of_comics(self):
+
+        return json.dumps({
+            "count": self.database.get_count()
+        })
+
+    @cherrypy.expose
+    def get_comic_details(self, comic_id):
+
+        comic_details = self.database.get_comic(comic_id)
+        del comic_details["_id"]
+        return json.dumps(comic_details)
+
+    @cherrypy.expose
     def find_comic(self, string):
         ''' Return comic details requested based on the i/p String '
             Return Type JSON object Json[List[Dictionary]]
@@ -41,7 +56,7 @@ class Server():
         '''
 
         matched_entries=[]
-        iterable_list=(self.database.find_data(string)).sort('rank', pymongo.DESCENDING)
+        iterable_list=(self.database.search_data(string)).sort('rank', pymongo.DESCENDING)
         for entry in iterable_list:
             id = int(entry['id'])
             self.database.increment_rank(id)

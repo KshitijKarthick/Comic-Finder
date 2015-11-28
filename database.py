@@ -30,7 +30,12 @@ class Database():
         ''' Insert the data into the Collection '''
 
         self.collection.insert(data)
-    def find_data(self, string):
+
+    def get_comic(self, comic_id):
+
+        return self.collection.find_one({"id": int(comic_id)})
+
+    def search_data(self, string):
         ''' Find the string in the Database '''
 
         pattern = re.compile(string, re.IGNORECASE)
@@ -38,8 +43,13 @@ class Database():
         regex.flags ^= re.UNICODE
         return self.collection.find({"transcript":regex})
 
+    def get_count(self):
+        """ Get the Count of comics """
+
+        return self.collection.count()
+
     def increment_rank(self, id):
 
-        data = self.collection.find_one({'id':id})
+        data = self.get_comic(id)
         data['rank'] += 1
         self.collection.save(data)
