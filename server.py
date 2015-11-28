@@ -55,8 +55,10 @@ class Server():
         ''' Return comic details requested based on the i/p String '
             Return Type JSON object Json[List[Dictionary]]
             Keys of Dictionary:
-                id  -> Comic Id
-                img -> Comic image
+                id          -> Comic Id
+                img         -> Comic image
+                title       -> Comic title
+                transcript  -> Comic transcript
         '''
 
         cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
@@ -69,7 +71,9 @@ class Server():
             self.database.increment_rank(id)
             matched_entries.append({
                 "id": int(entry['id']),
-                "img": entry["img"]
+                "img": entry["img"],
+                "title": entry["title"],
+                "transcript": entry["transcript"]
             })
         return json.dumps({
             string: matched_entries
