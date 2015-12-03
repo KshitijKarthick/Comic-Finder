@@ -1,6 +1,4 @@
 #! /usr/bin/env python3
-import re
-from bson import Regex
 from pymongo import MongoClient
 
 
@@ -38,13 +36,26 @@ class Database():
 
         return self.collection.find_one({"id": int(comic_id)})
 
-    def search_data(self, string):
+    def search_data(self, string, skip=0):
         """ Find the string in the Database """
 
-        pattern = re.compile(string, re.IGNORECASE)
-        regex = Regex.from_native(pattern)
-        regex.flags ^= re.UNICODE
-        return self.collection.find({"transcript": regex})
+        # import re
+        # from bson import Regex
+        # pattern = re.compile(string, re.IGNORECASE)
+        # regex = Regex.from_native(pattern)
+        # regex.flags ^= re.UNICODE
+        # return self.collection.find(
+        #     {"transcript": regex}, limit=10, skip=skip
+        # ).sort('rank', -1)
+        return self.collection.find(
+            {
+                '$text': {
+                    '$search': "\"" + string + "\""
+                }
+            },
+            limit=10,
+            skip=skip,
+        ).sort('rank', -1)
 
     def get_count(self):
         """ Get the Count of comics """
