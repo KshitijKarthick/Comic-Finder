@@ -36,7 +36,7 @@ class Database():
 
         return self.collection.find_one({"id": int(comic_id)})
 
-    def search_data(self, string, skip=0):
+    def search_data(self, string, phrase=True, limit=10, skip=0):
         """ Find the string in the Database """
 
         # import re
@@ -47,10 +47,12 @@ class Database():
         # return self.collection.find(
         #     {"transcript": regex}, limit=10, skip=skip
         # ).sort('rank', -1)
+        if phrase is True:
+            string = "\"" + string + "\""
         return self.collection.find(
             {
                 '$text': {
-                    '$search': "\"" + string + "\""
+                    '$search': string
                 }
             },
             limit=10,

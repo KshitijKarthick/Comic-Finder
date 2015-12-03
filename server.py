@@ -3,7 +3,6 @@ import cherrypy
 import os
 import configparser
 import json
-import pymongo
 from database import Database
 from jinja2 import Environment, FileSystemLoader
 
@@ -51,7 +50,7 @@ class Server():
         return json.dumps(comic_details)
 
     @cherrypy.expose
-    def find_comic(self, string):
+    def find_comic(self):
         ''' Return comic details requested based on the i/p String '
             Return Type JSON object Json[List[Dictionary]]
             Keys of Dictionary:
@@ -62,10 +61,20 @@ class Server():
         '''
 
         cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
+        try:
+            received_data = cherrypy.request.body.read()
+            decoded_data = json.loads(received_data.decode())
+            string = decoded_data['string']
+            limit = decoded_data['limit']
+            phrase = decoded_data['phrase']
+            skip = decoded_data['skip']
+        except KeyError:
+            raise cherrypy.HTTPError(500)
+        cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
         matched_entries = []
-        iterable_list = (
-            self.database.search_data(string)
-        ).sort('rank', pymongo.DESCENDING)
+        iterable_list = self.database.search_data(
+            string, phrase, limit, skip
+        )
         for entry in iterable_list:
             id = int(entry['id'])
             self.database.increment_rank(id)
