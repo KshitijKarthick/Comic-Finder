@@ -62,7 +62,12 @@ class Database():
     def get_count(self):
         """ Get the Count of comics """
 
-        return self.collection.count()
+        # XKCD Perk of 404 Error
+        count = self.collection.count()
+        if count > 404:
+            return count + 1
+        else:
+            return count
 
     def increment_rank(self, id):
 

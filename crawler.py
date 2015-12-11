@@ -1,6 +1,4 @@
-import database
 import configparser
-import urllib
 import json
 from urllib import request
 from database import Database
@@ -12,9 +10,12 @@ def crawl_data(database):
 
         errors = []
         try:
-            link_id = database.collection.find_one(
-                {'crawler': 'crawler'}
-            )['id']
+            # XKCD Perk of 404 error
+            link_id = database.collection.count()
+            if link_id > 404:
+                link_id += 1
+            else:
+                pass
         except TypeError:
             link_id = 0
         while(True):
@@ -22,7 +23,7 @@ def crawl_data(database):
             if database.collection.find_one({'id': link_id}):
                 continue
             else:
-                opener = urllib.request.build_opener()
+                opener = request.build_opener()
                 try:
                     webpage = opener.open(
                         "http://www.xkcd.com/" + str(link_id) + "/info.0.json"
@@ -51,10 +52,6 @@ def crawl_data(database):
                     except Exception as e:
                         print(e)
                         errors.append(link_id)
-        database.collection.update({'crawler': 'crawler'}, {"$set": {
-            'crawler': 'crawler',
-            'id': link_id - 1
-        }}, upsert=True)
         if len(errors) > 0:
             print(errors, " -> Could not be Downloaded not standard format")
         return errors
