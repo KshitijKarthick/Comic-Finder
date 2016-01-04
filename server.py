@@ -32,6 +32,18 @@ class Server():
         return template.render()
 
     @cherrypy.expose
+    def bulk_get_comic_details(self, list_of_comics):
+        """ Returns the Comic Details of list of comics (max 10) """
+
+        cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
+        data = []
+        list_of_comics = json.loads(list_of_comics)
+        limit = len(list_of_comics) if len(list_of_comics) <= 10 else 10
+        for id in range(limit):
+            data.append(json.loads(self.get_comic_details(list_of_comics[id])))
+        return json.dumps(data)
+
+    @cherrypy.expose
     def no_of_comics(self):
         """ Return the count of no of comics """
 
