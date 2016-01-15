@@ -58,7 +58,10 @@ class Server():
 
         cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
         comic_details = self.database.get_comic(comic_id)
-        del comic_details["_id"]
+        if comic_details is None:
+            comic_details = {}
+        else:
+            del comic_details["_id"]
         return json.dumps(comic_details)
 
     @cherrypy.expose
@@ -94,7 +97,8 @@ class Server():
                 "id": int(entry['id']),
                 "img": entry["img"],
                 "title": entry["title"],
-                "transcript": entry["transcript"]
+                "transcript": entry["transcript"],
+                "alt": entry["alt"]
             })
         return json.dumps({
             string: matched_entries

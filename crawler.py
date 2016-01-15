@@ -47,7 +47,8 @@ def crawl_data(database):
                             ),
                             'title': comic_data['title'],
                             'img': comic_data['img'],
-                            'rank': 0
+                            'rank': 0,
+                            'alt': comic_data['alt']
                         })
                     except Exception as e:
                         print(e)
