@@ -21,6 +21,10 @@ class Database():
             self.client = MongoClient(database_uri)
             self.db = self.client.get_default_database()
             self.collection = self.db.xkcd
+            # createIndex same as ensureIndex for mongodb 3 and above
+            self.collection.create_index([
+                ("title", "text"), ("transcript", "text")
+            ])
         except:
             print("Error Could not Connect with the Database\n")
             print("Make sure connection can be estabilished.")
